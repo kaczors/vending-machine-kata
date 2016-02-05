@@ -1,5 +1,7 @@
 package tdd.vendingMachine.validation;
 
+import tdd.vendingMachine.validation.rule.Rule;
+
 import java.util.Collection;
 
 abstract class AbstractValidator<T> implements Validator<T> {
@@ -15,7 +17,7 @@ abstract class AbstractValidator<T> implements Validator<T> {
         rules.forEach(
             r -> {
                 if (!r.isValid(object)) {
-                    throw new BusinessRuleValidationException(r.getViolationMessage(object));
+                    throw r.getException(object);
                 }
             }
         );

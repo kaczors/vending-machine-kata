@@ -1,6 +1,8 @@
 package tdd.vendingMachine.validation;
 
 import org.testng.annotations.Test;
+import tdd.vendingMachine.validation.exception.BusinessRuleValidationException;
+import tdd.vendingMachine.validation.rule.Rule;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.util.Lists.newArrayList;
@@ -59,9 +61,10 @@ public class AbstractValidatorTest {
         }
 
         @Override
-        public String getViolationMessage(String object) {
-            return message;
+        public BusinessRuleValidationException getException(String object) {
+            return new BusinessRuleValidationException(message);
         }
+
 
         public static class Builder {
             private boolean shouldPass;

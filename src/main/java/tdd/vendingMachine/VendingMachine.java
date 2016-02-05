@@ -1,8 +1,8 @@
 package tdd.vendingMachine;
 
-import tdd.vendingMachine.validation.BusinessRuleValidationException;
 import tdd.vendingMachine.validation.CoinEntryValidator;
 import tdd.vendingMachine.validation.Validator;
+import tdd.vendingMachine.validation.exception.UnsupportedCoinException;
 
 import java.util.Collection;
 
@@ -19,11 +19,16 @@ public class VendingMachine {
     }
 
     public void insertCoin(Coin coin) {
-        try{
+        try {
             coinValidator.validate(coin);
-        }catch (BusinessRuleValidationException e){
+            stash.add(coin);
+            display.setMessage(stash.getTotalAmount());
+        } catch (UnsupportedCoinException e) {
             coinOutputTry.add(coin);
         }
     }
 
+    public String getMessageFromDisplay() {
+        return display.getMessage();
+    }
 }
