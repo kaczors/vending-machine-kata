@@ -13,6 +13,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static tdd.vendingMachine.ApplicationConstants.WELCOME_MESSAGE;
 import static tdd.vendingMachine.ProductType.CHOCOLATE;
 import static tdd.vendingMachine.ProductType.COCA_COLA_05L;
+import static tdd.vendingMachine.ProductType.MINERAL_WATER_033L;
 
 public class VendingMachineIT {
 
@@ -105,6 +106,22 @@ public class VendingMachineIT {
 
         //then
         assertThat(displayedPrice).isEqualByComparingTo(product.getPrice().subtract(Coin._1.getValue()));
+    }
+
+    @Test
+    public void should_return_coins_and_reset_machine_state_on_cancel(){
+        //given
+        vendingMachine.addProduct(SAMPLE_SHELF_NUMBER, new Product(MINERAL_WATER_033L));
+        vendingMachine.selectShelf(SAMPLE_SHELF_NUMBER);
+        vendingMachine.insertCoin(Coin._01);
+        vendingMachine.insertCoin(Coin._02);
+
+        //when
+        vendingMachine.cancel();
+
+        //then
+        assertThat(vendingMachine.getOutputTrayCoins()).containsOnly(Coin._01, Coin._02);
+        assertThat(vendingMachine.getMessageFromDisplay()).isEqualTo(WELCOME_MESSAGE);
     }
 
 }

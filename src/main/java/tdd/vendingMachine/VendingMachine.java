@@ -4,6 +4,7 @@ import tdd.vendingMachine.validation.CoinEntryValidator;
 import tdd.vendingMachine.validation.Validator;
 import tdd.vendingMachine.validation.exception.UnsupportedCoinException;
 
+import java.math.BigDecimal;
 import java.util.Collection;
 import java.util.Optional;
 
@@ -44,21 +45,29 @@ public class VendingMachine {
 
     public void selectShelf(int shelfNumber) {
         Shelf shelf = productStorage.getShelf(shelfNumber);
-        if(shelf.isNotEmpty()){
+        if (shelf.isNotEmpty()) {
             selectedShelf = Optional.of(shelf);
             proceed();
         }
     }
 
-    private void proceed(){
-        if(selectedShelf.isPresent()){
-            display.setMessage(selectedShelf.get().getProductPrice().subtract(stash.getTotalAmount()));
-        }else {
-            display.setMessage(stash.getTotalAmount());
-        }
-    }
-
     public Collection<Product> getOutputTrayProducts() {
         return emptyList();
+    }
+
+    private void proceed() {
+        display.setMessage(getAmountToShow());
+    }
+
+    private BigDecimal getAmountToShow() {
+        return selectedShelf
+            .map(s -> s.getProductPrice().subtract(stash.getTotalAmount()))
+            .orElse(stash.getTotalAmount());
+    }
+
+    public void cancel() {
+        stash.transferCoinsTo(coinOutputTry);
+        selectedShelf = Optional.empty();
+        display.clear();
     }
 }

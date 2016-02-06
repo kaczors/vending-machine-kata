@@ -60,4 +60,19 @@ public class CoinContainerTest {
         //then
         assertThat(coinContainer.getAsList()).containsOnlyElementsOf(coins);
     }
+
+    @Test(dataProvider = "coinLists")
+    public void should_transfer_coins_to_other_container(Collection<Coin> coins){
+        //given
+        CoinContainer fromContainer = new CoinContainer();
+        CoinContainer toContainer = new CoinContainer();
+        coins.forEach(fromContainer::add);
+
+        //when
+        fromContainer.transferCoinsTo(toContainer);
+
+        //then
+        assertThat(toContainer.getAsList()).containsOnlyElementsOf(coins);
+        assertThat(fromContainer.getAsList()).isEmpty();
+    }
 }

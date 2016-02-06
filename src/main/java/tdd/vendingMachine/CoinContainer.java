@@ -36,4 +36,9 @@ class CoinContainer {
     private Stream<Coin> createCoinStream(Coin coin, int numberOfCoins){
         return IntStream.range(0, numberOfCoins).mapToObj(i -> coin);
     }
+
+    public void transferCoinsTo(CoinContainer coinOutputTry) {
+        getAsList().forEach(coinOutputTry::add);
+        coins.clear();
+    }
 }
