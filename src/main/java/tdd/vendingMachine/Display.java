@@ -5,14 +5,12 @@ import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 
 class Display {
-    private final static String STARTING_MESSAGE = "0.00";
     private final static String MONEY_FORMAT = "0.00";
     private final static char MONEY_DECIMAL_SEPARATOR = '.';
 
     private final DecimalFormat decimalFormat;
 
-
-    private String message = STARTING_MESSAGE;
+    private String message = ApplicationConstants.WELCOME_MESSAGE;
 
     Display(){
         DecimalFormatSymbols decimalFormatSymbols = DecimalFormatSymbols.getInstance();

@@ -1,15 +1,44 @@
 package tdd.vendingMachine;
 
 
+import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 import static com.google.common.collect.Lists.newArrayList;
 import static org.assertj.core.api.Assertions.assertThat;
+import static tdd.vendingMachine.ApplicationConstants.WELCOME_MESSAGE;
+import static tdd.vendingMachine.ProductType.CHOCOLATE;
+import static tdd.vendingMachine.ProductType.COCA_COLA_05L;
 
 public class VendingMachineIT {
+
+    private static final int SAMPLE_SHELF_NUMBER = 1;
+
+    VendingMachine vendingMachine;
+
+    @BeforeMethod
+    private void setUp(){
+        vendingMachine = new VendingMachine();
+    }
+
+    @Test
+    public void should_show_welcome_message_on_start(){
+        assertThat(vendingMachine.getMessageFromDisplay()).isEqualTo(WELCOME_MESSAGE);
+    }
+
+    @Test
+    public void should_have_empty_output_coin_tray_on_start(){
+        assertThat(vendingMachine.getOutputTrayCoins()).isEmpty();
+    }
+
+    @Test
+    public void should_have_empty_output_product_tray_on_start(){
+        assertThat(vendingMachine.getOutputTrayProducts()).isEmpty();
+    }
 
     @DataProvider
     public static Object[][] unsupportedCoins() {
@@ -20,15 +49,12 @@ public class VendingMachineIT {
 
     @Test(dataProvider = "unsupportedCoins")
     public void should_reject_unsupported_coin(Coin unsupportedCoin) {
-        //given
-        VendingMachine vendingMachine = new VendingMachine();
-
         //when
         vendingMachine.insertCoin(unsupportedCoin);
 
         //then
         assertThat(vendingMachine.getOutputTrayCoins()).containsExactly(unsupportedCoin);
-        assertThat(vendingMachine.getMessageFromDisplay()).isEqualTo("0.00");
+        assertThat(vendingMachine.getMessageFromDisplay()).isEqualTo(WELCOME_MESSAGE);
     }
 
     @DataProvider
@@ -42,13 +68,43 @@ public class VendingMachineIT {
 
     @Test(dataProvider = "coinsAndExpectedSum")
     public void should_show_sum_of_inserted_coins_before_product_is_selected(List<Coin> coins, String expectedMessage){
-        //given
-        VendingMachine vendingMachine = new VendingMachine();
-
         //when
         coins.forEach(vendingMachine::insertCoin);
 
         //then
         assertThat(vendingMachine.getMessageFromDisplay()).isEqualTo(expectedMessage);
     }
+
+    @DataProvider
+    public static Object[][] products() {
+        return new Object[][]{{new Product(CHOCOLATE)}, {new Product(COCA_COLA_05L)}};
+    }
+
+    @Test(dataProvider = "products")
+    public void should_display_product_price_after_shelf_number_is_selected(Product product){
+        //given
+        vendingMachine.addProduct(SAMPLE_SHELF_NUMBER, product);
+
+        //when
+        vendingMachine.selectShelf(SAMPLE_SHELF_NUMBER);
+        BigDecimal displayedPrice = new BigDecimal(vendingMachine.getMessageFromDisplay());
+
+        //then
+        assertThat(displayedPrice).isEqualByComparingTo(product.getPrice());
+    }
+
+    @Test(dataProvider = "products")
+    public void should_display_amount_that_must_be_added_to_cover_product_price_after_product_is_chosen(Product product){
+        //given
+        vendingMachine.addProduct(SAMPLE_SHELF_NUMBER, product);
+        vendingMachine.selectShelf(SAMPLE_SHELF_NUMBER);
+
+        //when
+        vendingMachine.insertCoin(Coin._1);
+        BigDecimal displayedPrice = new BigDecimal(vendingMachine.getMessageFromDisplay());
+
+        //then
+        assertThat(displayedPrice).isEqualByComparingTo(product.getPrice().subtract(Coin._1.getValue()));
+    }
+
 }
