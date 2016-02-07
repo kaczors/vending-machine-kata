@@ -10,8 +10,10 @@ import java.util.List;
 
 import static com.google.common.collect.Lists.newArrayList;
 import static org.assertj.core.api.Assertions.assertThat;
+import static tdd.vendingMachine.ApplicationConstants.CANT_GIVE_THE_CHANGE_MESSAGE;
 import static tdd.vendingMachine.ApplicationConstants.WELCOME_MESSAGE;
 import static tdd.vendingMachine.ProductType.CHOCOLATE;
+import static tdd.vendingMachine.ProductType.CHOCOLATE_BAR;
 import static tdd.vendingMachine.ProductType.COCA_COLA_05L;
 import static tdd.vendingMachine.ProductType.MINERAL_WATER_033L;
 
@@ -38,7 +40,7 @@ public class VendingMachineIT {
 
     @Test
     public void should_have_empty_output_product_tray_on_start(){
-        assertThat(vendingMachine.getOutputTrayProducts()).isEmpty();
+        assertThat(vendingMachine.getOutputProductsTray()).isEmpty();
     }
 
     @DataProvider
@@ -122,6 +124,40 @@ public class VendingMachineIT {
         //then
         assertThat(vendingMachine.getOutputTrayCoins()).containsOnly(Coin._01, Coin._02);
         assertThat(vendingMachine.getMessageFromDisplay()).isEqualTo(WELCOME_MESSAGE);
+        assertThat(vendingMachine.getOutputProductsTray()).isEmpty();
+    }
+
+    @Test
+    public void should_return_coins_and_display_warning_message_when_machine_cant_give_the_change(){
+        //given
+        vendingMachine.addProduct(SAMPLE_SHELF_NUMBER, new Product(MINERAL_WATER_033L));
+
+        //when
+        vendingMachine.selectShelf(SAMPLE_SHELF_NUMBER);
+        vendingMachine.insertCoin(Coin._5);
+
+        //then
+        assertThat(vendingMachine.getOutputTrayCoins()).containsOnly(Coin._5);
+        assertThat(vendingMachine.getMessageFromDisplay()).isEqualTo(CANT_GIVE_THE_CHANGE_MESSAGE);
+        assertThat(vendingMachine.getOutputProductsTray()).isEmpty();
+    }
+
+    @Test
+    public void should_drop_product_and_the_change(){
+        //given
+        Product product = new Product(CHOCOLATE_BAR);
+        vendingMachine.addProduct(SAMPLE_SHELF_NUMBER, product);
+        vendingMachine.addCoinsToCassette(newArrayList(Coin._02, Coin._02, Coin._01, Coin._01));
+
+        //when
+        vendingMachine.selectShelf(SAMPLE_SHELF_NUMBER);
+        vendingMachine.insertCoin(Coin._1);
+        vendingMachine.insertCoin(Coin._05);
+
+        //then
+        assertThat(vendingMachine.getOutputTrayCoins()).containsOnly(Coin._01, Coin._02);
+        assertThat(vendingMachine.getMessageFromDisplay()).isEqualTo(WELCOME_MESSAGE);
+        assertThat(vendingMachine.getOutputProductsTray()).containsOnly(product);
     }
 
 }

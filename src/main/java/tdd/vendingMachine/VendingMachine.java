@@ -2,13 +2,16 @@ package tdd.vendingMachine;
 
 import tdd.vendingMachine.validation.CoinEntryValidator;
 import tdd.vendingMachine.validation.Validator;
+import tdd.vendingMachine.validation.exception.CantGiveTheChangeException;
 import tdd.vendingMachine.validation.exception.UnsupportedCoinException;
 
 import java.math.BigDecimal;
 import java.util.Collection;
 import java.util.Optional;
+import java.util.function.Consumer;
 
-import static java.util.Collections.emptyList;
+import static com.google.common.collect.Lists.newArrayList;
+import static tdd.vendingMachine.util.NumberUtils.isEqualOrGreaterThan;
 
 public class VendingMachine {
 
@@ -18,6 +21,7 @@ public class VendingMachine {
     private final Display display = new Display();
     private final Validator<Coin> coinValidator = new CoinEntryValidator();
     private final ProductStorage productStorage = new ProductStorage();
+    private final Collection<Product> outputProductsTry = newArrayList();
 
     private Optional<Shelf> selectedShelf = Optional.empty();
 
@@ -29,7 +33,7 @@ public class VendingMachine {
         try {
             coinValidator.validate(coin);
             stash.add(coin);
-            proceed();
+            tryToBuyProduct();
         } catch (UnsupportedCoinException e) {
             coinOutputTry.add(coin);
         }
@@ -47,27 +51,55 @@ public class VendingMachine {
         Shelf shelf = productStorage.getShelf(shelfNumber);
         if (shelf.isNotEmpty()) {
             selectedShelf = Optional.of(shelf);
-            proceed();
+            tryToBuyProduct();
         }
     }
 
-    public Collection<Product> getOutputTrayProducts() {
-        return emptyList();
+    public Collection<Product> getOutputProductsTray() {
+        return outputProductsTry;
     }
 
-    private void proceed() {
-        display.setMessage(getAmountToShow());
+    private void tryToBuyProduct() {
+        try {
+            if (selectedShelf.isPresent()) {
+                Shelf shelf = selectedShelf.get();
+                if (isEqualOrGreaterThan(stash.getTotalAmount(), shelf.getProductPrice())) {
+                    BigDecimal changeAmount = stash.getTotalAmount().subtract(shelf.getProductPrice());
+                    if (!changeAmount.equals(BigDecimal.ZERO)) {
+                        cassette.transferCoinsByAmountTo(changeAmount, coinOutputTry);
+                        stash.transferAllCoinsTo(cassette);
+                        shelf.dropProductTo(outputProductsTry);
+                    }
+                    setToDefaultStateWithMessage(Display::clear);
+                }else{
+                    display.setMessage(getRequiredToCoverProductPriceAmount());
+                }
+            } else {
+                display.setMessage(stash.getTotalAmount());
+            }
+        } catch (CantGiveTheChangeException e) {
+            display.setMessage(e.getMessage());
+            setToDefaultStateWithMessage(d -> d.setMessage(e.getMessage()));
+        }
     }
 
-    private BigDecimal getAmountToShow() {
+    private BigDecimal getRequiredToCoverProductPriceAmount(){
         return selectedShelf
-            .map(s -> s.getProductPrice().subtract(stash.getTotalAmount()))
-            .orElse(stash.getTotalAmount());
+                .map(shelf -> shelf.getProductPrice().subtract(stash.getTotalAmount()))
+                .orElseThrow(() -> new RuntimeException("No shelf is selected"));
     }
 
     public void cancel() {
-        stash.transferCoinsTo(coinOutputTry);
+        setToDefaultStateWithMessage(Display::clear);
+    }
+
+    public void addCoinsToCassette(Collection<Coin> coins) {
+        coins.stream().forEach(cassette::add);
+    }
+
+    private void setToDefaultStateWithMessage(Consumer<Display> displayConsumer){
+        stash.transferAllCoinsTo(coinOutputTry);
         selectedShelf = Optional.empty();
-        display.clear();
+        displayConsumer.accept(display);
     }
 }

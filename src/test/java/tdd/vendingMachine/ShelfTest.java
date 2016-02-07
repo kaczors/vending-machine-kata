@@ -4,14 +4,19 @@ import org.testng.annotations.Test;
 import tdd.vendingMachine.validation.exception.BusinessRuleValidationException;
 
 import java.math.BigDecimal;
+import java.util.Collection;
 import java.util.Optional;
 
+import static com.google.common.collect.Lists.newArrayList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static tdd.vendingMachine.ProductType.CHOCOLATE;
 import static tdd.vendingMachine.ProductType.COCA_COLA_025L;
 import static tdd.vendingMachine.ProductType.COCA_COLA_05L;
+import static tdd.vendingMachine.ProductType.MINERAL_WATER_033L;
 
 public class ShelfTest {
+
+    private static final Product SAMPLE_PRODUCT = new Product(MINERAL_WATER_033L);
 
     @Test
     public void should_determine_type_based_on_contained_product(){
@@ -72,5 +77,20 @@ public class ShelfTest {
         BigDecimal productPrice = shelf.getProductPrice();
 
         //then exception expected
+    }
+
+    @Test
+    public void should_drop_product_to_given_destination(){
+        //given
+        Shelf shelf = new Shelf();
+        shelf.addProduct(SAMPLE_PRODUCT);
+        Collection<Product> destination = newArrayList();
+
+        //when
+        shelf.dropProductTo(destination);
+
+        //then
+        assertThat(destination).containsOnly(SAMPLE_PRODUCT);
+        assertThat(shelf.isEmpty()).isTrue();
     }
 }

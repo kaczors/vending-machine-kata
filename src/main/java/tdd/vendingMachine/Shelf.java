@@ -3,6 +3,7 @@ package tdd.vendingMachine;
 import tdd.vendingMachine.validation.exception.BusinessRuleValidationException;
 
 import java.math.BigDecimal;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
@@ -21,11 +22,15 @@ class Shelf {
         products.add(product);
     }
 
-    public boolean isNotEmpty(){
-        return !products.isEmpty();
+    public boolean isNotEmpty() {
+        return !isEmpty();
     }
 
-    BigDecimal getProductPrice() {
+    public boolean isEmpty() {
+        return products.isEmpty();
+    }
+
+    public BigDecimal getProductPrice() {
         return getProductType()
             .map(ProductType::getPrice)
             .orElseThrow(() -> new RuntimeException("Shelf is empty"));
@@ -42,7 +47,11 @@ class Shelf {
         }
     }
 
-    static Shelf empty(){
+    public void dropProductTo(Collection<Product> destination) {
+        destination.add(products.remove(0));
+    }
+
+    public static Shelf empty() {
         return new Shelf();
     }
 
