@@ -17,7 +17,7 @@ import static tdd.vendingMachine.ProductType.CHOCOLATE_BAR;
 import static tdd.vendingMachine.ProductType.COCA_COLA_05L;
 import static tdd.vendingMachine.ProductType.MINERAL_WATER_033L;
 
-public class VendingMachineIT {
+public class VendingMachineTest {
 
     private static final int SAMPLE_SHELF_NUMBER = 1;
 
