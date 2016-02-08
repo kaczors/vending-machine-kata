@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/kaczors/vending-machine-kata.svg?branch=master)](https://travis-ci.org/kaczors/vending-machine-kata) [![Coverage Status](https://coveralls.io/repos/github/kaczors/vending-machine-kata/badge.svg?branch=master)](https://coveralls.io/github/kaczors/vending-machine-kata?branch=master)
+
 vending-machine-kata
 ====================
 
