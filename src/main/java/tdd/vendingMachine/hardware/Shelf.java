@@ -1,6 +1,8 @@
-package tdd.vendingMachine;
+package tdd.vendingMachine.hardware;
 
-import tdd.vendingMachine.validation.exception.BusinessRuleValidationException;
+import tdd.vendingMachine.product.Product;
+import tdd.vendingMachine.product.ProductType;
+import tdd.vendingMachine.validation.exception.ApplicationException;
 
 import java.math.BigDecimal;
 import java.util.Collection;
@@ -9,7 +11,7 @@ import java.util.Optional;
 
 import static com.google.common.collect.Lists.newArrayList;
 
-class Shelf {
+public class Shelf {
 
     private List<Product> products = newArrayList();
 
@@ -42,7 +44,7 @@ class Shelf {
             ProductType shelfProductType = getProductType().get();
 
             if (!shelfProductType.equals(productType)) {
-                throw new BusinessRuleValidationException("Cannot add product with product type: " + productType + " to shelf of type: " + shelfProductType);
+                throw new ApplicationException("Product type: " + productType + " does not match to shelf product type: " + shelfProductType);
             }
         }
     }

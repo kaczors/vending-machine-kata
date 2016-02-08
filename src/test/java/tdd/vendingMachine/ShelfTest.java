@@ -1,7 +1,10 @@
 package tdd.vendingMachine;
 
 import org.testng.annotations.Test;
-import tdd.vendingMachine.validation.exception.BusinessRuleValidationException;
+import tdd.vendingMachine.hardware.Shelf;
+import tdd.vendingMachine.product.Product;
+import tdd.vendingMachine.product.ProductType;
+import tdd.vendingMachine.validation.exception.ApplicationException;
 
 import java.math.BigDecimal;
 import java.util.Collection;
@@ -9,10 +12,10 @@ import java.util.Optional;
 
 import static com.google.common.collect.Lists.newArrayList;
 import static org.assertj.core.api.Assertions.assertThat;
-import static tdd.vendingMachine.ProductType.CHOCOLATE;
-import static tdd.vendingMachine.ProductType.COCA_COLA_025L;
-import static tdd.vendingMachine.ProductType.COCA_COLA_05L;
-import static tdd.vendingMachine.ProductType.MINERAL_WATER_033L;
+import static tdd.vendingMachine.product.ProductType.CHOCOLATE;
+import static tdd.vendingMachine.product.ProductType.COCA_COLA_025L;
+import static tdd.vendingMachine.product.ProductType.COCA_COLA_05L;
+import static tdd.vendingMachine.product.ProductType.MINERAL_WATER_033L;
 
 public class ShelfTest {
 
@@ -43,7 +46,7 @@ public class ShelfTest {
         assertThat(productType).isEmpty();
     }
 
-    @Test(expectedExceptions = BusinessRuleValidationException.class, expectedExceptionsMessageRegExp = "Cannot add product with product type.*")
+    @Test(expectedExceptions = ApplicationException.class)
     public void should_throw_exception_when_attempt_to_add_product_with_invalid_product_type(){
         //given
         Shelf shelf = new Shelf();

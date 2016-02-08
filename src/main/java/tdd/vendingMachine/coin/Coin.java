@@ -1,4 +1,4 @@
-package tdd.vendingMachine;
+package tdd.vendingMachine.coin;
 
 import java.math.BigDecimal;
 import java.util.Comparator;
@@ -14,7 +14,7 @@ public enum Coin {
     _10(new BigDecimal("10")),
     _20(new BigDecimal("20"));
 
-    public final static Comparator<Coin> DESCENDING_VALUE_ORDER = (c1, c2) -> c2.getValue().compareTo(c1.getValue());
+    public final static Comparator<Coin> DESCENDING_VALUE_ORDER = (c1, c2) -> c2.getAmount().compareTo(c1.getAmount());
 
     private final BigDecimal value;
 
@@ -22,7 +22,7 @@ public enum Coin {
         this.value = value;
     }
 
-    public BigDecimal getValue() {
+    public BigDecimal getAmount() {
         return value;
     }
 

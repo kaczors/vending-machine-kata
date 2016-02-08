@@ -1,6 +1,6 @@
 package tdd.vendingMachine.validation;
 
-import tdd.vendingMachine.Coin;
+import tdd.vendingMachine.coin.Coin;
 import tdd.vendingMachine.validation.rule.SupportedCoinsRule;
 
 import static com.google.common.collect.Lists.newArrayList;

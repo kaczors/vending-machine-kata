@@ -9,13 +9,24 @@
  *
  * Copyright 2015 GTECH Corporation. All Rights Reserved.
  */
-package tdd.vendingMachine.validation.exception;
+package tdd.vendingMachine.software;
 
-import static tdd.vendingMachine.MessageFormats.CANT_GIVE_THE_CHANGE_MESSAGE;
+import tdd.vendingMachine.coin.Coin;
 
-public class CantGiveTheChangeException extends ApplicationException {
+class BuyOperationFailed extends AbstractVendingMachineState {
 
-    public CantGiveTheChangeException() {
-        super(CANT_GIVE_THE_CHANGE_MESSAGE);
+    BuyOperationFailed(VendingMachineContext context) {
+        super(context);
+    }
+
+    @Override
+    public void onCoinInserted(Coin coin) {
+        insertCoinAndProceed(coin, () -> context.go(StateName.COINS_INSERTED_PRODUCT_NOT_SELECTED));
+    }
+
+    @Override
+    public void onStateEntry() {
+        context.getStash().transferAllCoinsTo(context.getCoinOutputTray());
+        context.clearShelfSelection();
     }
 }

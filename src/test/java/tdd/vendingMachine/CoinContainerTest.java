@@ -2,6 +2,8 @@ package tdd.vendingMachine;
 
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
+import tdd.vendingMachine.coin.Coin;
+import tdd.vendingMachine.hardware.CoinContainer;
 import tdd.vendingMachine.validation.exception.CantGiveTheChangeException;
 
 import java.math.BigDecimal;
@@ -61,7 +63,7 @@ public class CoinContainerTest {
         coins.forEach(coinContainer::add);
 
         //then
-        assertThat(coinContainer.getAsList()).containsOnlyElementsOf(coins);
+        assertThat(coinContainer.getCoinList()).containsOnlyElementsOf(coins);
     }
 
     @Test(dataProvider = "coinLists")
@@ -75,8 +77,8 @@ public class CoinContainerTest {
         fromContainer.transferAllCoinsTo(toContainer);
 
         //then
-        assertThat(toContainer.getAsList()).containsOnlyElementsOf(coins);
-        assertThat(fromContainer.getAsList()).isEmpty();
+        assertThat(toContainer.getCoinList()).containsOnlyElementsOf(coins);
+        assertThat(fromContainer.getCoinList()).isEmpty();
     }
 
     @DataProvider

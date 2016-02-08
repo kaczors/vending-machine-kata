@@ -1,7 +1,7 @@
 package tdd.vendingMachine.validation.rule;
 
-import tdd.vendingMachine.Coin;
-import tdd.vendingMachine.validation.exception.BusinessRuleValidationException;
+import tdd.vendingMachine.coin.Coin;
+import tdd.vendingMachine.validation.exception.ApplicationException;
 import tdd.vendingMachine.validation.exception.UnsupportedCoinException;
 
 import java.util.Set;
@@ -20,7 +20,7 @@ public class SupportedCoinsRule implements Rule<Coin> {
     }
 
     @Override
-    public BusinessRuleValidationException getException(Coin coin) {
+    public ApplicationException getException(Coin coin) {
         return new UnsupportedCoinException(coin);
     }
 

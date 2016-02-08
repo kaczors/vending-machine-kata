@@ -1,6 +1,7 @@
-package tdd.vendingMachine;
+package tdd.vendingMachine.hardware;
 
 import com.google.common.collect.Ordering;
+import tdd.vendingMachine.coin.Coin;
 import tdd.vendingMachine.validation.exception.CantGiveTheChangeException;
 
 import java.math.BigDecimal;
@@ -15,7 +16,7 @@ import static java.math.BigDecimal.ZERO;
 import static java.util.stream.Collectors.toList;
 import static tdd.vendingMachine.util.NumberUtils.isEqualByComparingTo;
 
-class CoinContainer {
+public class CoinContainer {
 
     private final Map<Coin, Integer> coins = new HashMap<>();
 
@@ -27,23 +28,19 @@ class CoinContainer {
     public BigDecimal getTotalAmount() {
         return coins.entrySet()
             .stream()
-            .map(e -> e.getKey().getValue().multiply(BigDecimal.valueOf(e.getValue())))
+            .map(e -> e.getKey().getAmount().multiply(BigDecimal.valueOf(e.getValue())))
             .reduce(ZERO, BigDecimal::add);
     }
 
-    public List<Coin> getAsList() {
+    public List<Coin> getCoinList() {
         return coins.entrySet()
             .stream()
             .flatMap(e -> createCoinStream(e.getKey(), e.getValue()))
             .collect(toList());
     }
 
-    private Stream<Coin> createCoinStream(Coin coin, int numberOfCoins) {
-        return IntStream.range(0, numberOfCoins).mapToObj(i -> coin);
-    }
-
     public void transferAllCoinsTo(CoinContainer coinOutputTry) {
-        getAsList().forEach(coinOutputTry::add);
+        getCoinList().forEach(coinOutputTry::add);
         coins.clear();
     }
 
@@ -51,20 +48,24 @@ class CoinContainer {
         removeCoinsByAmount(amount).forEach(coinsDestination::add);
     }
 
+    private Stream<Coin> createCoinStream(Coin coin, int numberOfCoins) {
+        return IntStream.range(0, numberOfCoins).mapToObj(i -> coin);
+    }
+
     private Collection<Coin> removeCoinsByAmount(BigDecimal amount) {
         Map<Coin, Integer> bestMatch = new HashMap<>();
         BigDecimal bestMatchAmount = BigDecimal.ZERO;
 
-        List<Coin> possibleCoinsInDescendingOrder = Ordering.from(Coin.DESCENDING_VALUE_ORDER).sortedCopy(coins.keySet());
+        List<Coin> availableCoinsTypesInDescendingOrder = Ordering.from(Coin.DESCENDING_VALUE_ORDER).sortedCopy(coins.keySet());
 
-        for (Coin coin : possibleCoinsInDescendingOrder) {
-            int coinCount = coins.get(coin);
+        for (Coin coin : availableCoinsTypesInDescendingOrder) {
+            int coinsCount = coins.get(coin);
 
-            int neededCount = amount.subtract(bestMatchAmount).divideToIntegralValue(coin.getValue()).intValueExact();
-            int actualCount = neededCount >= coinCount ? coinCount : neededCount;
+            int neededCount = amount.subtract(bestMatchAmount).divideToIntegralValue(coin.getAmount()).intValueExact();
+            int actualCount = neededCount >= coinsCount ? coinsCount : neededCount;
 
             bestMatch.put(coin, actualCount);
-            bestMatchAmount = bestMatchAmount.add(coin.getValue().multiply(new BigDecimal(actualCount)));
+            bestMatchAmount = bestMatchAmount.add(coin.getAmount().multiply(new BigDecimal(actualCount)));
 
             if (isEqualByComparingTo(bestMatchAmount, amount)) {
                 break;

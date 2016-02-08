@@ -9,13 +9,25 @@
  *
  * Copyright 2015 GTECH Corporation. All Rights Reserved.
  */
-package tdd.vendingMachine.validation.exception;
+package tdd.vendingMachine.hardware;
 
-import static tdd.vendingMachine.MessageFormats.CANT_GIVE_THE_CHANGE_MESSAGE;
+import tdd.vendingMachine.product.Product;
 
-public class CantGiveTheChangeException extends ApplicationException {
+import java.util.Collection;
 
-    public CantGiveTheChangeException() {
-        super(CANT_GIVE_THE_CHANGE_MESSAGE);
-    }
+public interface VendingMachinePartsSupplier {
+
+    CoinContainer getCoinInputTray();
+
+    CoinContainer getStash();
+
+    CoinContainer getCassette();
+
+    CoinContainer getCoinOutputTray();
+
+    Display getDisplay();
+
+    ProductStorage getProductStorage();
+
+    Collection<Product> getOutputProductsTry();
 }

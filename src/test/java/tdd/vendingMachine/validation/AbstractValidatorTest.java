@@ -1,7 +1,7 @@
 package tdd.vendingMachine.validation;
 
 import org.testng.annotations.Test;
-import tdd.vendingMachine.validation.exception.BusinessRuleValidationException;
+import tdd.vendingMachine.validation.exception.ApplicationException;
 import tdd.vendingMachine.validation.rule.Rule;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -22,7 +22,7 @@ public class AbstractValidatorTest {
 
         //when
         assertThatThrownBy(() -> validator.validate("Sample object"))
-            .isInstanceOf(BusinessRuleValidationException.class)
+            .isInstanceOf(ApplicationException.class)
             .hasMessage(SAMPLE_VIOLATION_MESSAGE);
     }
 
@@ -61,8 +61,8 @@ public class AbstractValidatorTest {
         }
 
         @Override
-        public BusinessRuleValidationException getException(String object) {
-            return new BusinessRuleValidationException(message);
+        public ApplicationException getException(String object) {
+            return new ApplicationException(message);
         }
 
 

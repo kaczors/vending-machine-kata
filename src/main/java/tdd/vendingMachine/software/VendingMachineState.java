@@ -9,13 +9,16 @@
  *
  * Copyright 2015 GTECH Corporation. All Rights Reserved.
  */
-package tdd.vendingMachine.validation.exception;
+package tdd.vendingMachine.software;
 
-import static tdd.vendingMachine.MessageFormats.CANT_GIVE_THE_CHANGE_MESSAGE;
+import tdd.vendingMachine.coin.Coin;
 
-public class CantGiveTheChangeException extends ApplicationException {
+interface VendingMachineState {
+    void onCoinInserted(Coin coin);
 
-    public CantGiveTheChangeException() {
-        super(CANT_GIVE_THE_CHANGE_MESSAGE);
-    }
+    void onCancelClicked();
+
+    void onShelfNumberSelected(int shelfNumber);
+
+    void onStateEntry();
 }

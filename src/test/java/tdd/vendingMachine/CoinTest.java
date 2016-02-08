@@ -2,6 +2,7 @@ package tdd.vendingMachine;
 
 import com.google.common.collect.Lists;
 import org.testng.annotations.Test;
+import tdd.vendingMachine.coin.Coin;
 
 import java.util.List;
 
