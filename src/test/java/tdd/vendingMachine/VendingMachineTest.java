@@ -12,6 +12,7 @@ import tdd.vendingMachine.product.Product;
 import tdd.vendingMachine.validation.CoinEntryValidator;
 
 import java.math.BigDecimal;
+import java.util.Collection;
 import java.util.List;
 
 import static com.google.common.collect.Lists.newArrayList;
@@ -77,21 +78,21 @@ public class VendingMachineTest {
     }
 
     @DataProvider
-    public static Object[][] coinsAndExpectedSum() {
+    public static Object[][] coins() {
         return new Object[][]{
-            {newArrayList(Coin._1, Coin._05), "1,50"},
-            {newArrayList(Coin._01, Coin._02), "0,30"},
-            {newArrayList(Coin._1, Coin._1, Coin._1), "3,00"}
+            {newArrayList(Coin._1, Coin._05)},
+            {newArrayList(Coin._01, Coin._02)},
+            {newArrayList(Coin._1, Coin._1, Coin._1)}
         };
     }
 
-    @Test(dataProvider = "coinsAndExpectedSum")
-    public void should_show_sum_of_inserted_coins_before_product_is_selected(List<Coin> coins, String expectedMessage) {
+    @Test(dataProvider = "coins")
+    public void should_show_sum_of_inserted_coins_before_product_is_selected(List<Coin> coins) {
         //when
         coins.forEach(vendingMachine::insertCoin);
 
         //then
-        assertThat(vendingMachine.getMessageFromDisplay()).isEqualTo(expectedMessage);
+        assertThat(vendingMachine.getMessageFromDisplay()).isEqualTo(formatAmountMessage(sumCoinsAmount(coins)));
     }
 
     @DataProvider
@@ -195,6 +196,10 @@ public class VendingMachineTest {
 
     private String formatAmountMessage(BigDecimal amount) {
         return String.format(AMOUNT_MESSAGE, amount);
+    }
+
+    private BigDecimal sumCoinsAmount(Collection<Coin> coins){
+        return coins.stream().reduce(BigDecimal.ZERO, (a, c) -> a.add(c.getAmount()), BigDecimal::add);
     }
 }
 
